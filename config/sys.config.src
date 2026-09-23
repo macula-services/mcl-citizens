@@ -71,5 +71,16 @@
     {macula, [
         {crypto_profile, pq_hybrid}
     ]},
+    {mcl_citizens, [
+        %% The realm NAME the fact topic carries. Checked at start against the
+        %% realm tag above: sha256(name) must equal MCL_REALM.
+        {realm_name,          "${MCL_REALM_NAME}"},
+        %% THE mcl-citizens INSTANCES WHOSE PRESENCE FACTS THIS ONE ADMITS, as
+        %% node ids (64 hex, comma separated). Anyone in the realm can publish
+        %% on that topic, so only a publisher on this list whose signature
+        %% verified is heard. This instance's own id is optional. No default:
+        %% a missing or malformed list stops the node.
+        {presence_publishers, "${MCL_CITIZENS_PRESENCE_PUBLISHERS}"}
+    ]},
     {kernel, [{logger_level, info}]}
 ].

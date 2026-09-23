@@ -7,6 +7,8 @@
 #     MCL_REALM_KEY=<hex of the realm's public signing key> \
 #     MACULA_STATION_SEEDS=station.example:4433 \
 #     MACULA_STATION_NODE_IDS=<64-hex node id of that station> \
+#     MCL_REALM_NAME=<realm name, sha256 of which is MCL_REALM> \
+#     MCL_CITIZENS_PRESENCE_PUBLISHERS=<node ids of the instances to federate with> \
 #     docker compose -p mcl-citizens -f deploy/docker-compose.yml up -d
 #
 # IF YOU DEPLOY THROUGH SOMETHING ELSE, keep this file anyway and let the other
@@ -53,11 +55,19 @@ services:
       # that dial could never connect anyway.
       - MACULA_STATION_SEEDS=${MACULA_STATION_SEEDS:?set MACULA_STATION_SEEDS to "host[:port][,host[:port]...]"}
       - MACULA_STATION_NODE_IDS=${MACULA_STATION_NODE_IDS:?set MACULA_STATION_NODE_IDS to the matching 64-hex node ids, comma-separated}
+      # The realm NAME the presence fact's topic carries. Checked at start:
+      # sha256 of it must be MCL_REALM, or the node refuses to start rather
+      # than publish where nobody listens.
+      - MCL_REALM_NAME=${MCL_REALM_NAME:?set MCL_REALM_NAME to the realm name, e.g. io.macula}
+      # The mcl-citizens instances whose presence facts this one admits: their
+      # node ids, 64 hex each, comma separated. This instance's own is optional.
+      # No default: an instance that hears nobody looks healthy and is not.
+      - MCL_CITIZENS_PRESENCE_PUBLISHERS=${MCL_CITIZENS_PRESENCE_PUBLISHERS:?set MCL_CITIZENS_PRESENCE_PUBLISHERS to the node ids of the mcl-citizens instances to federate with}
       - MCL_NODE_NAME=mcl_citizens
       - MCL_NODE_HOST=127.0.0.1
       - MCL_COOKIE=mcl_citizens
       # Host networking means a port already bound on this host fails SILENTLY.
-      - MCL_HEALTH_PORT=8484
+      - MCL_HEALTH_PORT=8486
 
 # The identity volume, NAMED HERE rather than left to the project name, so a
 # `docker compose -p` with a different name reuses the same key instead of

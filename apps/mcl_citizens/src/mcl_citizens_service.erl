@@ -4,13 +4,6 @@
 %% live node, so a service that forgets one dies with `undef' where nobody is
 %% watching. The `-behaviour' attribute below is what turns that into a compile
 %% error instead, and the generated test suite guards the attribute itself.
-%%
-%% IT ANNOUNCES NOTHING AND ASKS FOR NOTHING, on purpose. A service that does
-%% nothing yet has no capability to offer and needs no authority from the realm.
-%% Advertising a capability before it exists puts a lie on the mesh that another
-%% service can find and call. Both lists grow when the thing they name exists,
-%% and a generated test fails when they change, so growing them is a deliberate
-%% act rather than a comment someone forgot.
 -module(mcl_citizens_service).
 
 -behaviour(mcl_om_service).
@@ -22,18 +15,41 @@ info() ->
       version => <<"0.1.0">>,
       description => <<"The citizens directory for the Macula mesh: who exists, federated across instances by mesh facts">>}.
 
-start(_Opts) -> mcl_citizens_sup:start_link().
+%% The realm name the fact topic carries is checked against the realm the pool
+%% publishes in before anything starts: a mismatch publishes where nobody
+%% subscribed, and looks exactly like a quiet directory.
+start(_Opts) ->
+    ok = mcl_citizens_facts:check_realm_name(),
+    mcl_citizens_sup:start_link().
 
 stop(_State) -> ok.
 
-%% Green once the supervision tree is up. Replace this with a real probe of
-%% whatever this service needs in order to do its job. A dark mesh is usually NOT
-%% a health failure: decide that deliberately rather than by default.
-health() -> ok.
+%% Down without the directory, since nothing can be registered or read.
+%% Degraded while federation is not subscribed: this instance still serves its
+%% own registrations but hears no other instance. A dark mesh is therefore
+%% degraded, not down.
+health() ->
+    directory(citizen_directory:is_running()).
 
-%% WHAT THIS SERVICE ANNOUNCES IT CAN DO. Other services find this one by these
-%% names, so each entry is a promise that something answers.
-capabilities() -> [].
+directory(false) -> {down, directory_not_running};
+directory(true) -> hearing(hear_citizen_presence:subscribed()).
+
+hearing(true) -> ok;
+hearing(false) -> {degraded, not_subscribed_to_presence}.
+
+%% WHAT THIS SERVICE ANNOUNCES IT CAN DO. On the wire each is
+%% `mcl-citizens/<name>': mcl_om prefixes the org from sys.config.
+%%
+%% ALL OPEN, deliberately. list_citizens and get_citizen read a public phone
+%% book. register_presence registers the CALL's verified caller and nobody
+%% else, so it needs no token either: macula has already proved who is asking.
+capabilities() ->
+    [#{name => <<"register_presence">>, version => 1,
+       handler => {register_presence_responder, []}, auth => open},
+     #{name => <<"list_citizens">>, version => 1,
+       handler => {list_citizens_responder, []}, auth => open},
+     #{name => <<"get_citizen">>, version => 1,
+       handler => {get_citizen_responder, []}, auth => open}].
 
 %% THE AUTHORITY THIS SERVICE ASKS THE REALM FOR, and deliberately nothing more.
 %% Ask for exactly the topics you publish and subscribe to. Popped, an attacker

@@ -55,14 +55,30 @@ info_version_matches_the_application_test() ->
     #{version := Reported} = ?SERVICE:info(),
     ?assertEqual(list_to_binary(Vsn), Reported).
 
-health_is_green_test() ->
-    ?assertEqual(ok, ?SERVICE:health()).
+%% Without the directory nothing can be registered or read.
+health_is_down_without_the_directory_test() ->
+    ?assertEqual({down, directory_not_running}, ?SERVICE:health()).
 
-%% An empty list is the correct answer for a service that does nothing yet. The
-%% assertion is here so that adding a capability breaks a test and makes someone
-%% write down what the service can now actually do.
-announces_no_capability_yet_test() ->
-    ?assertEqual([], ?SERVICE:capabilities()).
+%% The directory answers but this instance hears no other: degraded, not down.
+health_is_degraded_while_federation_is_not_subscribed_test() ->
+    {ok, Pid} = citizen_directory:start_link(),
+    unlink(Pid),
+    Health = ?SERVICE:health(),
+    exit(Pid, shutdown),
+    ?assertEqual({degraded, not_subscribed_to_presence}, Health).
+
+%% The assertion is here so that adding a capability breaks a test and makes
+%% someone write down what the service can now actually do. On the wire each
+%% is `mcl-citizens/<name>': mcl_om prefixes the org from sys.config.
+announces_register_list_and_get_test() ->
+    Names = [maps:get(name, C) || C <- ?SERVICE:capabilities()],
+    ?assertEqual([<<"register_presence">>, <<"list_citizens">>, <<"get_citizen">>], Names).
+
+%% OPEN, AND SAID SO. The directory is a public phone book, and a registration
+%% is the verified caller's own, so no procedure needs a token. mcl_om warns
+%% about a handler with no `auth' key; naming it makes the choice deliberate.
+every_procedure_is_explicitly_open_test() ->
+    ?assertEqual([open, open, open], [maps:get(auth, C) || C <- ?SERVICE:capabilities()]).
 
 identity_spec_has_the_shape_mcl_om_expects_test() ->
     #{scope := Scope, actions := Actions,
@@ -72,24 +88,40 @@ identity_spec_has_the_shape_mcl_om_expects_test() ->
     ?assert(is_list(Resources)),
     ?assert(is_integer(Ttl) andalso Ttl > 0).
 
-%% A resource this service is not authorised for is a publish the realm would
-%% refuse once UCAN delegation lands. Asking for nothing and claiming nothing
-%% must stay in step, so the two are asserted together.
-authority_matches_what_is_announced_test() ->
+%% The procedures are served under the realm's delegation for this org, and the
+%% presence fact is published and heard under this node's own verified
+%% identity, as mcl-warden's facts are. Nothing here needs realm-granted
+%% actions or resources.
+asks_the_realm_for_no_extra_authority_test() ->
     #{actions := Actions, resources := Resources} = ?SERVICE:identity_spec(),
-    ?assertEqual([], ?SERVICE:capabilities()),
     ?assertEqual([], Actions),
     ?assertEqual([], Resources).
 
-%% The supervisor starts and stops cleanly on its own, without mcl_om. It has
-%% no children as generated; this asserts the tree is startable, not that it does
-%% any work.
-supervisor_starts_and_stops_test() ->
-    {ok, Pid} = mcl_citizens_sup:start_link(),
-    ?assert(is_process_alive(Pid)),
-    ?assertEqual([], supervisor:which_children(Pid)),
-    unlink(Pid),
-    exit(Pid, shutdown).
+%% The release takes the realm name and the instance list from the environment,
+%% and leaves macula's publisher signature on: the listener hears a fact only
+%% when that signature verified, so an instance that stopped signing would
+%% publish facts no other instance accepts.
+release_config_names_the_realm_and_the_instances_and_keeps_signatures_test() ->
+    {ok, Text} = file:read_file(alongside("config/sys.config.src")),
+    %% relx substitutes the ${VARS} at boot. A quoted one keeps its name here, so
+    %% the assertion can say which variable feeds which key; a bare one (the
+    %% health port) becomes a number, which is all the parser needs.
+    Named = re:replace(Text, <<"\"\\$\\{([A-Z_]+)\\}\"">>, <<"\"\\1\"">>, [global]),
+    Substituted = re:replace(Named, <<"\\$\\{[A-Z_]+\\}">>, <<"0">>, [global, {return, list}]),
+    {ok, Tokens, _End} = erl_scan:string(Substituted),
+    {ok, Config} = erl_parse:parse_term(Tokens),
+    Own = proplists:get_value(?APP, Config, []),
+    Macula = proplists:get_value(macula, Config, []),
+    ?assertEqual("MCL_REALM_NAME", proplists:get_value(realm_name, Own)),
+    ?assertEqual("MCL_CITIZENS_PRESENCE_PUBLISHERS", proplists:get_value(presence_publishers, Own)),
+    ?assertEqual(true, proplists:get_value(pubsub_emit_publisher_sig, Macula, true)).
+
+%% The directory is started before the federation listener, so a fact heard
+%% the moment the subscription lands has somewhere to go.
+supervises_the_directory_then_the_listener_test() ->
+    {ok, {_Flags, Children}} = mcl_citizens_sup:init([]),
+    ?assertEqual([citizen_directory, hear_citizen_presence],
+                 [maps:get(id, C) || C <- Children]).
 
 %%==============================================================================
 %% The runtime is pinned in two places, and neither is the one you are running

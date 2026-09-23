@@ -1,9 +1,9 @@
-%% @doc Supervises this service's own processes.
+%% @doc Supervises the directory and the federation listener.
 %%
-%% NO CHILDREN AS GENERATED, and an empty child list is the honest scaffold
-%% rather than a placeholder. There is nothing to supervise yet, and a worker
-%% that ticks and does nothing is how a codebase ends up carrying an empty
-%% heartbeat for a year.
+%% The directory starts first, so a fact heard the moment the subscription
+%% lands has somewhere to go. rest_for_one: a directory restart empties the
+%% table, and the listener restarts behind it so nothing is admitted into a
+%% table that is about to vanish.
 -module(mcl_citizens_sup).
 
 -behaviour(supervisor).
@@ -13,4 +13,8 @@
 start_link() -> supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init([]) ->
-    {ok, {#{strategy => one_for_one, intensity => 5, period => 10}, []}}.
+    {ok, {#{strategy => rest_for_one, intensity => 5, period => 10},
+          [#{id => citizen_directory,
+             start => {citizen_directory, start_link, []}},
+           #{id => hear_citizen_presence,
+             start => {hear_citizen_presence, start_link, []}}]}}.
