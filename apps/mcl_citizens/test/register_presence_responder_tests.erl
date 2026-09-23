@@ -7,8 +7,9 @@
 %%% under that key. So the registration is the caller's own, with no proof in
 %%% the payload. A `citizen_did' the caller sends anyway must name itself.
 %%%
-%%% Nothing here boots mcl_om, so the federation publish finds no mesh and is
-%%% skipped; that it does not crash the reply is asserted too.
+%%% Nothing here boots mcl_om, so the federation publish finds no mesh
+%%% (`mcl_om:mesh_handles/0' answers `mesh_unavailable') and is skipped; every
+%%% registration below asserts that this does not cost the reply.
 -module(register_presence_responder_tests).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -26,12 +27,17 @@ registrations_test_() ->
       fun refuses_a_ttl_that_is_not_a_positive_integer/1,
       fun a_registration_replaces_the_callers_entry/1]}.
 
+%% The realm name is set, as the running node has it: an unset one stops the
+%% node at boot, so it is not a state a call can meet.
 setup() ->
+    _ = application:load(mcl_citizens),
+    ok = application:set_env(mcl_citizens, realm_name, "io.macula"),
     {ok, Pid} = citizen_directory:start_link(),
     unlink(Pid),
     Pid.
 
 teardown(Pid) ->
+    application:unset_env(mcl_citizens, realm_name),
     Ref = monitor(process, Pid),
     exit(Pid, shutdown),
     receive {'DOWN', Ref, process, Pid, _} -> ok end.
@@ -98,6 +104,14 @@ a_registration_replaces_the_callers_entry(_) ->
     #{ok := 1} = register(maps:remove(display_name, payload(Caller))),
     {ok, Entry} = citizen_directory:find(Caller),
     [?_assertNot(maps:is_key(display_name, Entry))].
+
+%% macula merges `caller' only into a map payload, so a null or a list arrives
+%% bare. Refused as the caller's mistake, not crashed into a retryable
+%% temporary_relay_failure.
+refuses_a_payload_that_is_not_a_map_test() ->
+    [?assertEqual({reply, #{ok => 0, error => {text, <<"invalid_payload">>}}, []},
+                  register_presence_responder:handle_request(P, []))
+     || P <- [null, [], {text, <<"hello">>}, 42]].
 
 %%------------------------------------------------------------------------------
 %% The federated fact, pure

@@ -78,7 +78,8 @@
         %% THE mcl-citizens INSTANCES WHOSE PRESENCE FACTS THIS ONE ADMITS, as
         %% node ids (64 hex, comma separated). Anyone in the realm can publish
         %% on that topic, so only a publisher on this list whose signature
-        %% verified is heard. This instance's own id is optional. No default:
+        %% verified is heard. This instance's own id is added automatically, so a
+        %% single instance lists itself. No default:
         %% a missing or malformed list stops the node.
         {presence_publishers, "${MCL_CITIZENS_PRESENCE_PUBLISHERS}"}
     ]},

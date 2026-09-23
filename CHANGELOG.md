@@ -15,7 +15,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `mcl-citizens/register_presence`, `list_citizens` and `get_citizen`, all
   open, replacing `hecate_citizens.*`.
 - Federation through the `citizen_presence_registered_v1` app fact, admitted
-  only from verified publishers on `MCL_CITIZENS_PRESENCE_PUBLISHERS`.
+  only from verified publishers on `MCL_CITIZENS_PRESENCE_PUBLISHERS`, to
+  which this node's own id is added so its own echo is not counted as a rogue
+  publisher.
+- A payload that is not a map is refused with `invalid_payload` instead of
+  crashing into a retryable `temporary_relay_failure`.
 - The start refuses a `MCL_REALM_NAME` whose sha256 is not `MCL_REALM`.
 - `/health`: down without the directory, degraded while federation is not
   subscribed.

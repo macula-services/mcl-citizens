@@ -8,10 +8,12 @@
 
 init(_Args) -> {ok, []}.
 
--spec handle_request(map(), term()) -> {reply, map(), term()}.
-handle_request(Payload, State) ->
+-spec handle_request(term(), term()) -> {reply, map(), term()}.
+handle_request(Payload, State) when is_map(Payload) ->
     Did = citizen_did:from_wire(mcl_om_wire:field(citizen_did, Payload)),
-    {reply, fetched(looked_up(Did)), State}.
+    {reply, fetched(looked_up(Did)), State};
+handle_request(_NotAMap, State) ->
+    {reply, fetched({error, invalid_payload}), State}.
 
 looked_up({ok, Did}) -> citizen_directory:find(Did);
 looked_up({error, _} = Error) -> Error.

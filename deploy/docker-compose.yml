@@ -60,7 +60,8 @@ services:
       # than publish where nobody listens.
       - MCL_REALM_NAME=${MCL_REALM_NAME:?set MCL_REALM_NAME to the realm name, e.g. io.macula}
       # The mcl-citizens instances whose presence facts this one admits: their
-      # node ids, 64 hex each, comma separated. This instance's own is optional.
+      # node ids, 64 hex each, comma separated. This instance's own id is added
+      # automatically; a single instance lists itself.
       # No default: an instance that hears nobody looks healthy and is not.
       - MCL_CITIZENS_PRESENCE_PUBLISHERS=${MCL_CITIZENS_PRESENCE_PUBLISHERS:?set MCL_CITIZENS_PRESENCE_PUBLISHERS to the node ids of the mcl-citizens instances to federate with}
       - MCL_NODE_NAME=mcl_citizens

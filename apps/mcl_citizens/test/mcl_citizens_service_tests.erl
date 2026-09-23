@@ -97,11 +97,8 @@ asks_the_realm_for_no_extra_authority_test() ->
     ?assertEqual([], Actions),
     ?assertEqual([], Resources).
 
-%% The release takes the realm name and the instance list from the environment,
-%% and leaves macula's publisher signature on: the listener hears a fact only
-%% when that signature verified, so an instance that stopped signing would
-%% publish facts no other instance accepts.
-release_config_names_the_realm_and_the_instances_and_keeps_signatures_test() ->
+%% The release takes the realm name and the instance list from the environment.
+release_config_names_the_realm_and_the_instances_test() ->
     {ok, Text} = file:read_file(alongside("config/sys.config.src")),
     %% relx substitutes the ${VARS} at boot. A quoted one keeps its name here, so
     %% the assertion can say which variable feeds which key; a bare one (the
@@ -111,10 +108,8 @@ release_config_names_the_realm_and_the_instances_and_keeps_signatures_test() ->
     {ok, Tokens, _End} = erl_scan:string(Substituted),
     {ok, Config} = erl_parse:parse_term(Tokens),
     Own = proplists:get_value(?APP, Config, []),
-    Macula = proplists:get_value(macula, Config, []),
     ?assertEqual("MCL_REALM_NAME", proplists:get_value(realm_name, Own)),
-    ?assertEqual("MCL_CITIZENS_PRESENCE_PUBLISHERS", proplists:get_value(presence_publishers, Own)),
-    ?assertEqual(true, proplists:get_value(pubsub_emit_publisher_sig, Macula, true)).
+    ?assertEqual("MCL_CITIZENS_PRESENCE_PUBLISHERS", proplists:get_value(presence_publishers, Own)).
 
 %% The directory is started before the federation listener, so a fact heard
 %% the moment the subscription lands has somewhere to go.

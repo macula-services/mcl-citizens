@@ -10,13 +10,17 @@
 %%% Everything else is dropped here and counted, and the count is logged once
 %%% a minute, never per fact.
 %%%
+%%% THIS INSTANCE IS ALWAYS LISTED. It hears its own publish back, and an echo
+%%% counted as a rogue publisher would warn every minute for the life of the
+%%% service, hiding a real one. Its echo re-admits idempotently instead.
+%%%
 %%% Re-subscribes when the subscription goes away, and retries while the mesh
 %%% is dark. /health reports degraded until it holds.
 -module(hear_citizen_presence).
 
 -behaviour(gen_server).
 
--export([start_link/0, subscribed/0, take/3]).
+-export([start_link/0, subscribed/0, take/3, with_own/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2]).
 
 -define(RESUBSCRIBE_MS, 5_000).
@@ -47,7 +51,8 @@ take(Fact, Meta, Publishers) ->
 %% The instance list and the realm name are read first: without valid ones this
 %% raises and the node does not boot.
 init([]) ->
-    Publishers = mcl_citizens_facts:presence_publishers(),
+    Publishers = with_own(mcl_citizens_facts:presence_publishers(),
+                          own_node_id(mcl_om:identity_key())),
     Topic = mcl_citizens_facts:presence_topic(mcl_citizens_facts:realm_name()),
     self() ! subscribe,
     erlang:send_after(?REPORT_MS, self(), report),
@@ -73,6 +78,15 @@ handle_info(report, St) ->
     {noreply, reported(St)};
 handle_info(_Info, St) ->
     {noreply, St}.
+
+%% @doc The configured instances plus this node's own id, once. An ephemeral
+%% node has no stored identity and publishes nothing others could hear back.
+-spec with_own([<<_:256>>], {ok, <<_:256>>} | {error, term()}) -> [<<_:256>>].
+with_own(Publishers, {ok, Own}) -> Publishers ++ ([Own] -- Publishers);
+with_own(Publishers, {error, _}) -> Publishers.
+
+own_node_id({ok, Key}) -> macula_node_keys:node_id(Key);
+own_node_id({error, _} = Error) -> Error.
 
 %%------------------------------------------------------------------------------
 

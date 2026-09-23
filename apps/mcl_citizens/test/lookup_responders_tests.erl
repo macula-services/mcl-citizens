@@ -3,6 +3,11 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+get_citizen_refuses_a_payload_that_is_not_a_map_test() ->
+    [?assertEqual({reply, #{ok => 0, error => {text, <<"invalid_payload">>}}, []},
+                  get_citizen_responder:handle_request(P, []))
+     || P <- [null, [], {text, <<"x">>}]].
+
 lookups_test_() ->
     {setup,
      fun() -> {ok, Pid} = citizen_directory:start_link(), unlink(Pid), Pid end,

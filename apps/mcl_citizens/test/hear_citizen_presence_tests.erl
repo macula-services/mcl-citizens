@@ -25,7 +25,8 @@ hearing_test_() ->
       fun refuses_a_fact_without_registered_at/1,
       fun refuses_a_registration_more_than_a_minute_ahead/1,
       fun a_replayed_earlier_registration_replaces_nothing/1,
-      fun drops_a_fact_whose_did_is_not_a_did/1]}.
+      fun drops_a_fact_whose_did_is_not_a_did/1,
+      fun admits_its_own_echo/1]}.
 
 setup() ->
     {ok, Pid} = citizen_directory:start_link(),
@@ -98,9 +99,27 @@ a_replayed_earlier_registration_replaces_nothing(_) ->
     [?_assertEqual(<<"current">>, maps:get(display_name, Entry)),
      ?_assertEqual(Current, maps:get(registered_at, Entry))].
 
+%% Every instance hears its own publish back. Its own node id is always on the
+%% list, so its echo re-admits idempotently instead of being counted as a rogue
+%% publisher every minute for the life of the service.
+admits_its_own_echo(_) ->
+    Own = <<3:256>>,
+    Did = did(),
+    Fact = fact(Did, now_ms(), ?MINUTE),
+    Pubs = hear_citizen_presence:with_own([?LISTED], {ok, Own}),
+    [?_assertMatch({ok, _}, hear_citizen_presence:take(Fact, verified(Own), Pubs)),
+     ?_assertMatch({ok, _}, citizen_directory:find(Did))].
+
 drops_a_fact_whose_did_is_not_a_did(_) ->
     Fact = (fact(did(), now_ms(), ?MINUTE))#{citizen_did => {text, <<"nope">>}},
     [?_assertEqual({refused, invalid_citizen_did}, hear(Fact, verified(?LISTED)))].
+
+%% An ephemeral node has no stored identity to add; the list stands as
+%% configured. A listed own id is not duplicated.
+with_own_adds_this_nodes_id_once_test() ->
+    ?assertEqual([?LISTED, <<3:256>>], hear_citizen_presence:with_own([?LISTED], {ok, <<3:256>>})),
+    ?assertEqual([?LISTED], hear_citizen_presence:with_own([?LISTED], {ok, ?LISTED})),
+    ?assertEqual([?LISTED], hear_citizen_presence:with_own([?LISTED], {error, no_identity_key})).
 
 %%------------------------------------------------------------------------------
 

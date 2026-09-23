@@ -13,7 +13,7 @@ procedures, all open, and answers `/health` on 8486.
 |-----------|---------|-------|
 | `mcl-citizens/register_presence` | optional `citizen_kind`, `display_name`, `offers` (list), `ttl_ms` (default and maximum 20 minutes), and optionally `citizen_did` | `#{ok => 1, expires_at => Ms}` or `#{ok => 0, error => Text}` |
 | `mcl-citizens/list_citizens` | none | `#{ok => 1, citizens => [Citizen]}` |
-| `mcl-citizens/get_citizen` | `citizen_did`, 64 hex text | `#{ok => 1, citizen => Citizen}` or `#{ok => 0, error => <<"not_found">>}` |
+| `mcl-citizens/get_citizen` | `citizen_did`, 64 hex text | `#{ok => 1, citizen => Citizen}` or `#{ok => 0, error => Text}`: `not_found`, `invalid_citizen_did` or `invalid_payload` |
 
 A `Citizen` is `citizen_did` (lowercase hex text), `citizen_kind`,
 `display_name`, `offers`, `registered_at` and `expires_at` (milliseconds),
@@ -69,7 +69,7 @@ a different libc.
 | `MACULA_STATION_SEEDS` | required | Station hosts to dial, `host[:port]`, comma-separated. No default: naming a realm costs nothing, dialling a production station from every dev clone does. |
 | `MACULA_STATION_NODE_IDS` | required | The matching 64-hex station node ids, comma-separated, index-paired with the seeds. The dial is pinned (D5): mcl_om refuses to boot a pool with an unpinned seed. |
 | `MCL_REALM_NAME` | required | The realm's name, as the fact topic carries it. At start, `sha256` of it must equal `MCL_REALM` or the node refuses to start. |
-| `MCL_CITIZENS_PRESENCE_PUBLISHERS` | required | Node ids of the mcl-citizens instances to federate with, 64 hex each, comma separated. This instance's own is optional. Missing or malformed stops the node. |
+| `MCL_CITIZENS_PRESENCE_PUBLISHERS` | required | Node ids of the mcl-citizens instances to federate with, 64 hex each, comma separated. This instance's own id is added automatically; a single instance lists itself. Missing or malformed stops the node. |
 | `MCL_HEALTH_PORT` | `8486` | Health endpoint, assigned in macula-fleet `PORTS.md`. Host networking makes a collision a silent bind failure, so take a new one from there rather than picking one. |
 | `MCL_NODE_NAME` | `mcl_citizens` | Erlang node name. |
 | `MCL_NODE_HOST` | `127.0.0.1` | Erlang node host. |

@@ -26,10 +26,15 @@
 
 init(_Args) -> {ok, []}.
 
--spec handle_request(map(), term()) -> {reply, map(), term()}.
-handle_request(Payload, State) ->
+%% macula merges `caller' only into a map payload, so a null or a list arrives
+%% bare: refused as the caller's mistake rather than crashed into a retryable
+%% temporary_relay_failure.
+-spec handle_request(term(), term()) -> {reply, map(), term()}.
+handle_request(Payload, State) when is_map(Payload) ->
     Caller = mcl_om_wire:caller(Payload),
-    {reply, reply(registrant(Caller, claimed(Payload)), Payload), State}.
+    {reply, reply(registrant(Caller, claimed(Payload)), Payload), State};
+handle_request(_NotAMap, State) ->
+    {reply, refused(invalid_payload), State}.
 
 %% What the payload says the citizen is, if it says anything.
 claimed(Payload) ->
@@ -83,15 +88,9 @@ presence_fact(#{ttl_ms := TtlMs} = Fields) ->
     Entry = maps:filter(fun(_K, V) -> V =/= undefined end, maps:remove(ttl_ms, Fields)),
     (citizen_directory:to_wire(Entry))#{ttl_ms => TtlMs}.
 
-%% A dark mesh or an unset realm name drops the fact; the registration stands.
+%% A dark mesh drops the fact; the registration stands. The realm name was
+%% checked at boot, before any call could arrive.
 publish(Fields) ->
-    _ = publish_on(topic(), presence_fact(Fields)),
+    Topic = mcl_citizens_facts:presence_topic(mcl_citizens_facts:realm_name()),
+    _ = mcl_om_pubsub:publish(Topic, presence_fact(Fields), #{mode => async_log}),
     ok.
-
-topic() ->
-    try {ok, mcl_citizens_facts:presence_topic(mcl_citizens_facts:realm_name())}
-    catch error:{mcl_citizens_realm_name_unset, _} = Why -> {error, Why}
-    end.
-
-publish_on({ok, Topic}, Fact) -> mcl_om_pubsub:publish(Topic, Fact, #{mode => async_log});
-publish_on({error, _Why} = Error, _Fact) -> Error.

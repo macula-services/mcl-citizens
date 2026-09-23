@@ -49,9 +49,9 @@ matched(true, _Name, _Tag) -> ok;
 matched(false, Name, Tag) -> error({mcl_citizens_realm_name_mismatch, Name, Tag}).
 
 %% @doc The instances whose presence facts are admitted, as raw node ids, from
-%% `MCL_CITIZENS_PRESENCE_PUBLISHERS' (64 hex each, comma separated). This
-%% instance's own id is optional: it writes its own registrations before
-%% publishing them. Missing or malformed stops the node.
+%% `MCL_CITIZENS_PRESENCE_PUBLISHERS' (64 hex each, comma separated), as
+%% configured; `hear_citizen_presence' adds this node's own id. Missing or
+%% malformed stops the node.
 -spec presence_publishers() -> [<<_:256>>].
 presence_publishers() ->
     publishers(application:get_env(?APP, presence_publishers)).
