@@ -9,6 +9,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- mcl_om `~> 0.28` with macula 12.2: the service answers `mcl-citizens/info`
+  with no code of its own, which also makes it count as online on the realm's
+  Providers desk, and a failed publish announcement can no longer kill it.
+- Built in `macula-ci-otp` and run on `macula-pq-runtime`, the team's image
+  pair pinned by dated tag and digest, instead of the hexpm builder and a
+  floating `alpine:3.22` runtime. The image is labelled with the commit it
+  was built from.
 - Built on mcl_om 0.27, which brings no barrel_docdb and so no rocksdb: the
   image and CI install no cmake and no rocksdb codec libraries.
 - The boot claim is labelled for the realm's operator: `MCL_SERVICE_NAME`
