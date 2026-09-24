@@ -65,6 +65,11 @@ services:
       # No default: an instance that hears nobody looks healthy and is not.
       - MCL_CITIZENS_PRESENCE_PUBLISHERS=${MCL_CITIZENS_PRESENCE_PUBLISHERS:?set MCL_CITIZENS_PRESENCE_PUBLISHERS to the node ids of the mcl-citizens instances to federate with}
       - MCL_NODE_NAME=mcl_citizens
+      # Labels on the claim this service sends the realm at boot, which the
+      # realm's operator sees on the pending row: what is asking, and from
+      # which box. MCL_BOX comes from the host that deploys it.
+      - MCL_SERVICE_NAME=mcl-citizens
+      - MCL_BOX=${MCL_BOX:-}
       - MCL_NODE_HOST=127.0.0.1
       - MCL_COOKIE=mcl_citizens
       # Host networking means a port already bound on this host fails SILENTLY.

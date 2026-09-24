@@ -70,6 +70,8 @@ a different libc.
 | `MACULA_STATION_NODE_IDS` | required | The matching 64-hex station node ids, comma-separated, index-paired with the seeds. The dial is pinned (D5): mcl_om refuses to boot a pool with an unpinned seed. |
 | `MCL_REALM_NAME` | required | The realm's name, as the fact topic carries it. At start, `sha256` of it must equal `MCL_REALM` or the node refuses to start. |
 | `MCL_CITIZENS_PRESENCE_PUBLISHERS` | required | Node ids of the mcl-citizens instances to federate with, 64 hex each, comma separated. This instance's own id is added automatically; a single instance lists itself. Missing or malformed stops the node. |
+| `MCL_SERVICE_NAME` | `mcl-citizens` | The service label on the claim the realm's operator sees at boot. Falls back to the service's own name. |
+| `MCL_BOX` | empty | The host label on that claim: which box is asking. Set by whatever deploys the service. |
 | `MCL_HEALTH_PORT` | `8486` | Health endpoint, assigned in macula-fleet `PORTS.md`. Host networking makes a collision a silent bind failure, so take a new one from there rather than picking one. |
 | `MCL_NODE_NAME` | `mcl_citizens` | Erlang node name. |
 | `MCL_NODE_HOST` | `127.0.0.1` | Erlang node host. |
