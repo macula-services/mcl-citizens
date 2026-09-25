@@ -4,9 +4,11 @@
 %% Built from this service's real info/0 and its real capabilities/0 with
 %% `info' added the way mcl_om:boot/2 adds it, then sent through macula's own
 %% frame codec, the path a reply takes. What arrives must be text, never bytes,
-%% and name this service, its procedures and the mcl_om 0.28 / macula 12.2 pair
-%% it was built with (12.2 under an older mcl_om lets a failed publish
-%% announcement kill the publishing process).
+%% and name this service, its procedures and the mcl_om / macula pair it was
+%% built with: macula 12.5.1 or later (#37: before it, a provider running for
+%% about two hours stops admitting callers) under mcl_om 0.29.1 or later (its
+%% ADVERTISE goes only to the serving station, so co-org providers stop
+%% clobbering each other's registration).
 -module(mcl_citizens_info_tests).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -26,11 +28,10 @@ info_round_trip_test_() ->
           ?_assertEqual([{text, C} || C <- [<<(?ORG)/binary, "/info">> | Own]],
                         maps:get(capabilities, Reply)),
           ?_assertEqual([], [V || V <- lists:flatten(maps:values(Reply)), is_binary(V)]),
-          %% Floors, not exact minors: the pairing that matters is mcl_om 0.28 or
-          %% later WITH macula 12.2 or later; a later compatible release (macula
-          %% 12.3.0 arrived the same day) must not fail this.
-          ?_assert(at_least(maps:get(mcl_om_version, Reply), [0, 28])),
-          ?_assert(at_least(maps:get(macula_version, Reply), [12, 2]))]
+          %% Floors, not exact versions: a later compatible release must not
+          %% fail this, an earlier one must.
+          ?_assert(at_least(maps:get(mcl_om_version, Reply), [0, 29, 1])),
+          ?_assert(at_least(maps:get(macula_version, Reply), [12, 5, 1]))]
      end}.
 
 %% The service must leave `info' to mcl_om: declaring its own refuses boot.
@@ -50,10 +51,10 @@ facts() ->
       uptime_s => 1, status => ok,
       capabilities => [<<(?ORG)/binary, "/", N/binary>> || #{name := N} <- Caps]}.
 
-%% Whether a `{text, <<"X.Y.Z">>}' version is at least [Major, Minor].
+%% Whether a `{text, <<"X.Y.Z">>}' version is at least [Major, Minor, Patch].
 at_least({text, Vsn}, Floor) ->
-    [Major, Minor | _] = [binary_to_integer(P) || P <- binary:split(Vsn, <<".">>, [global])],
-    [Major, Minor] >= Floor.
+    [Major, Minor, Patch | _] = [binary_to_integer(P) || P <- binary:split(Vsn, <<".">>, [global])],
+    [Major, Minor, Patch] >= Floor.
 
 vsn(App) ->
     _ = application:load(App),

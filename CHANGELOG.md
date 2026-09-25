@@ -9,6 +9,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- Floors raised to macula 12.5.1 and mcl_om 0.29.1. macula 12.5.1 fixes
+  admission expiry (#37): before it, a provider that had run for about two
+  hours stopped admitting callers. mcl_om 0.29.1 sends a capability's ADVERTISE
+  only to its serving station, so two providers no longer overwrite each
+  other's registration. macula is now named in the deps for its floor alone;
+  mcl_om by itself allows 12.2. The info test checks both floors down to the
+  patch.
 - mcl_om `~> 0.28` with macula 12.2: the service answers `mcl-citizens/info`
   with no code of its own, which also makes it count as online on the realm's
   Providers desk, and a failed publish announcement can no longer kill it.
