@@ -206,6 +206,13 @@ running_otp() ->
                                                   "OTP_VERSION"])),
     string:trim(Version).
 
+%% THIS SERVICE EXISTS TO ANSWER ON THE MESH, so the release requires it:
+%% mcl_om refuses a boot without the realm, the realm key and pinned seeds,
+%% naming each missing one, instead of booting green with no mesh.
+the_release_requires_the_mesh_test() ->
+    ?assertEqual(<<"required">>,
+                 pinned("config/sys.config.src", "^\\s+\\{mesh,\\s*(required)\\},?$")).
+
 pinned(Relative, Pattern) ->
     {ok, Text} = file:read_file(alongside(Relative)),
     {match, [Version]} = re:run(Text, Pattern,
