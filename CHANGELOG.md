@@ -9,6 +9,9 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **Every pushed image is signed by digest** (keyless, SBOM and provenance attested) by an
+  attest job after the build, calling macula-ci-images' `attest-image.yml` pinned by commit,
+  as mcl-echo does. The fleet refuses an unsigned digest.
 - **macula 13.0.1 and mcl_om 0.33.1**, checked down to the patch by a
   dependency floor test. The release sets `{mesh, required}`: the service
   refuses to boot without `MCL_REALM`, `MCL_REALM_KEY`,
