@@ -2,7 +2,7 @@
 
 **The citizens directory for the Macula mesh: who exists, federated across instances by mesh facts**
 
-Built on macula 12 and `mcl_om`.
+Built on macula 13 and `mcl_om` 0.33.
 
 ## What it does
 
@@ -20,7 +20,7 @@ A `Citizen` is `citizen_did` (lowercase hex text), `citizen_kind`,
 absent fields omitted. Every string goes out as `{text, Bin}`, so callers
 outside the BEAM get strings and not hex.
 
-**A citizen registers itself and nobody else.** macula 12 signs every CALL with
+**A citizen registers itself and nobody else.** macula signs every CALL with
 the caller's identity key and verifies it here before the handler runs, so the
 registration is the verified caller's own and no proof travels in the payload.
 A `citizen_did` sent anyway must be the caller's, or the call is refused with

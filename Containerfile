@@ -12,7 +12,7 @@
 # runs on macula-pq-runtime, the same Debian trixie, so its ERTS and NIFs match
 # the libc they run on. lint.yml pins the same build image, and the service
 # tests guard all three pins and the release the RUN step below insists on.
-FROM ghcr.io/macula-io/macula-ci-otp:20260923-1444@sha256:dd2ba6eb858a0eacedf0179300323fe5c6da46fb308d22da0ca8cfcd1f0718dc AS builder
+FROM ghcr.io/macula-io/macula-ci-otp:20260928-1800@sha256:7318a443021f8a4ceb7ad56b0ab21f52db95db92996ea0f0897a1eff0b678832 AS builder
 
 # The OTP release, asserted here because the image tag names a date.
 RUN erl -noshell -eval ' \
@@ -35,7 +35,7 @@ COPY config ./config
 COPY apps ./apps
 RUN rebar3 as prod release
 
-FROM ghcr.io/macula-io/macula-pq-runtime:20260923-1444@sha256:15a5501b7277804c5a62c93121d157773d1401d238a1bf630ef4b50fc2f1df09
+FROM ghcr.io/macula-io/macula-pq-runtime:20260928-1800@sha256:a1d18c6a6a22d8d7fba6086785c683bd113828e16fdfde147d96ae67d2c6892d
 # LINKS THE PACKAGE TO THE REPOSITORY. On registries that read it, ghcr among
 # them, a package without this label is an orphan: it does not appear on the
 # repository page and does not inherit its visibility. A service that shipped
