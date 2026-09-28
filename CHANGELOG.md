@@ -5,7 +5,7 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0] - 2026-09-28
 
 ### Changed
 
@@ -69,8 +69,6 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - The federated fact is a canonical app fact and carries no hecate name.
 - The migration clause for entries stored before `registered_at` existed is
   gone, since nothing is carried over.
-- `Containerfile` building an alpine image, with macula's QUIC NIF compiled from
-  source rather than fetched against a foreign libc.
 - `deploy/docker-compose.yml`, the service's own run contract.
 - CI: `lint-and-test` on every push and pull request, `build-and-push` to
   the registry: `:latest` on `main`, the semver tag alone on `v*`.

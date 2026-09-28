@@ -7,6 +7,8 @@
         kernel,
         stdlib,
         crypto,
+        %% Called directly: fact topics, node ids, the presence subscription.
+        macula,
         %% Mesh SDK, realm identity, capabilities, health.
         mcl_om
     ]},
