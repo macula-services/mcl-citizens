@@ -30,8 +30,8 @@ info_round_trip_test_() ->
           ?_assertEqual([], [V || V <- lists:flatten(maps:values(Reply)), is_binary(V)]),
           %% Floors, not exact versions: a later compatible release must not
           %% fail this, an earlier one must.
-          ?_assert(at_least(maps:get(mcl_om_version, Reply), [0, 29, 1])),
-          ?_assert(at_least(maps:get(macula_version, Reply), [12, 5, 1]))]
+          ?_assert(at_least(maps:get(mcl_om_version, Reply), [0, 37, 6])),
+          ?_assert(at_least(maps:get(macula_version, Reply), [13, 5, 0]))]
      end}.
 
 %% The service must leave `info' to mcl_om: declaring its own refuses boot.
