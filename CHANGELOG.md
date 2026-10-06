@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-10-06
+
+- **Names its KEM key.** `{macula, [{kem_advertise, enabled}]}` in the release config: the
+  advertisement carries an ML-KEM key, so a caller seals its payload end to end and the stations
+  relay ciphertext. Capabilities stay `preferred`, so a caller that does not seal is still answered.
+  A test asserts the baked config enables it (macula-fleet#7).
+
 ## [0.2.0] - 2026-10-05
 
 - **On mcl_om 0.37.6 and macula 13.5.0** (`mcl_om ~> 0.37`, `macula ~> 13.5`, released versions only). mcl_om 0.37 brings
