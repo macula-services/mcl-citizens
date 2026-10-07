@@ -72,7 +72,6 @@ mcl service uses); the service tests hold the pins.
 | `MCL_CITIZENS_PRESENCE_PUBLISHERS` | required | Node ids of the mcl-citizens instances to federate with, 64 hex each, comma separated. This instance's own id is added automatically; a single instance lists itself. Missing or malformed stops the node. |
 | `MCL_SERVICE_NAME` | `mcl-citizens` | The service label on the claim the realm's operator sees at boot. Falls back to the service's own name. |
 | `MCL_BOX` | empty | The host label on that claim: which box is asking. Set by whatever deploys the service. |
-| `MCL_HEALTH_PORT` | `8486` | Health endpoint, assigned in macula-fleet `PORTS.md`. Host networking makes a collision a silent bind failure, so take a new one from there rather than picking one. |
 | `MCL_NODE_NAME` | `mcl_citizens` | Erlang node name. |
 | `MCL_NODE_HOST` | `127.0.0.1` | Erlang node host. |
 | `MCL_COOKIE` | `mcl_citizens` | Erlang cookie. |
