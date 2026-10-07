@@ -12,7 +12,7 @@
 
 info() ->
     #{name => <<"mcl-citizens">>,
-      version => <<"0.2.1">>,
+      version => <<"0.3.0">>,
       description => <<"The citizens directory for the Macula mesh: who exists, federated across instances by mesh facts">>}.
 
 %% The realm name the fact topic carries is checked against the realm the pool
