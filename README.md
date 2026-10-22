@@ -29,7 +29,8 @@ Built on macula 16 and `mcl_om` 1.4.
 ## What it does
 
 A public phone book of who is on the mesh right now. It serves three
-procedures, all open, and answers `/health` on 8486.
+procedures, all open, and answers `/health` on the Unix socket
+`/run/mcl/health.sock`.
 
 | Procedure | Payload | Reply |
 |-----------|---------|-------|
