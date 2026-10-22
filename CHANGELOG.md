@@ -5,6 +5,10 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+- **The base library is macula 16** (macula-codebase-checks#4): the floor moves `~> 15.6` to `~> 16.0`, and `mcl_om` from `~> 1.0` to `~> 1.4`, the release whose own base is macula 16. 16.0 keeps wire 1.0, so this service still speaks to every wire 1.0 box. What it adds is the revocation bound (macula#118): an endorsement admits its holder for at most 24 hours, and a gated overlay context must pass `member_standing`. This service gates no overlay and issues no endorsement.
+
 ## 0.4.0 - 2026-10-17
 
 - **Wire 1.0: on macula 15.6 / mcl_om 1.0.** A 15 node neither reads nor handshakes with a 14 node, so this build speaks wire 1.0 only and is held off every live box until the flag day (macula-fleet#27). `macula:subscribe/4` now returns once a station acknowledges the subscription (macula#12), and a refusal comes back as an error rather than a silent registration; `hear_citizen_presence` already warns and reschedules on any subscribe failure, so it behaves as it did.
