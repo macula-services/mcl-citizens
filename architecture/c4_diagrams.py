@@ -148,7 +148,7 @@ def context():
           ["Endorses the node's identity key", "and grants the org mcl-citizens,",
            "whose procedures it advertises"])
     d.box("b-mac", 680, 420, 280, 120, "Macula stations, mesh DHT", "[Macula infrastructure]",
-          ["Two pinned stations are its mesh", "entry points (QUIC); the DHT takes",
+          ["The pinned stations are its mesh", "entry points (QUIC); the DHT takes",
            "the capabilities it advertises"])
     d.edge("M180 150V180H400V200")
     d.text("t-rel", 200, 160, "calls register_presence,")
@@ -225,8 +225,8 @@ def components():
     d.edge("M488 440H500V604H512"); d.text("t-rel", 506, 524, "hands it over")
     d.edge("M740 674V698"); d.text("t-rel", 748, 692, "admit/2, one writer")
     d.edge("M488 758H512"); d.text("t-rel", 500, 690, "reads the directory", anchor="middle")
-    d.text("t-desc", 40, 1006, "config/sys.config.src fixes the org, mcl-citizens, which prefixes every procedure; it also pins the realm key and the two")
-    d.text("t-desc", 40, 1022, "station node ids. deploy/docker-compose.yml mounts only the identity volume: nothing here writes to disk, so there is no data volume to lose.")
+    d.text("t-desc", 40, 1006, "config/sys.config.src fixes the org, mcl-citizens, which prefixes every procedure; it also pins the realm key.")
+    d.text("t-desc", 40, 1022, "deploy/docker-compose.yml mounts only the identity volume: nothing here writes to disk, so there is no data volume to lose.")
     d.legend(1052, boundary=False)
     d.write()
 

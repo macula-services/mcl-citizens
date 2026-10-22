@@ -19,7 +19,7 @@ no store and mounts no data volume.
 | Citizen | Person | An agent, or the operator of a node, that registers itself (its verified caller id is its identity) and reads the directory |
 | Service operator | Person | Deploys the release and supplies `MCL_REALM`, `MCL_REALM_KEY`, the pinned station pair, `MCL_REALM_NAME` and the federation instance list |
 | macula-realm | Macula infrastructure | Endorses the node's identity key and grants the org `mcl-citizens`, which is what lets its procedures be advertised |
-| Macula stations, mesh DHT | Macula infrastructure | The service dials out to two pinned stations (QUIC, `pq_hybrid`); the mesh DHT takes the capabilities it advertises |
+| Macula stations, mesh DHT | Macula infrastructure | The service dials out to the pinned stations (QUIC, `pq_hybrid`); the mesh DHT takes the capabilities it advertises |
 | Other mcl-citizens instances | External system | Peers on the directory topic: each hears the others' `citizen_presence_registered_v1`, but only from the node ids in `MCL_CITIZENS_PRESENCE_PUBLISHERS` |
 
 The directory is soft state. Nothing is written to disk: a restart empties the
@@ -47,11 +47,13 @@ because macula verifies the caller's signature before the handler runs; a
 | host environment | from the host | `MCL_REALM`, `MCL_REALM_KEY`, `MACULA_STATION_SEEDS`, `MACULA_STATION_NODE_IDS`, `MCL_REALM_NAME`, `MCL_CITIZENS_PRESENCE_PUBLISHERS`, and the claim labels `MCL_SERVICE_NAME` and `MCL_BOX` |
 
 `config/sys.config.src` fixes the org, `mcl-citizens`, which prefixes every
-procedure, and pins the realm key and the station node ids. The identity key is
+procedure, and pins the realm key. The identity key is
 the only thing on disk, at `/etc/mcl/secrets/identity.key`; `deploy/docker-compose.yml`
 mounts `mcl-citizens-secrets` there and nothing else. `/health` is `down` without
 the directory and `degraded` while the federation subscription is not held, which
 includes a dark mesh.
+
+**Where the station list comes from.** It is not in `config/sys.config.src`: `mcl_om` reads `MACULA_STATION_SEEDS` and `MACULA_STATION_NODE_IDS` from the environment at boot, paired index for index, so this repository pins no station and the list may be any length.
 
 ## Drawing them
 
@@ -71,5 +73,5 @@ too small for its own text or a line wider than its box, so a stale box fails th
 run rather than overlapping the next one.
 
 The check that keeps them here is the `c4-model` job in
-`.github/workflows/build-push.yml`. It is red until both files exist and are
+`.github/workflows/c4-model.yml`. It is red until both files exist and are
 shown, and it stays red if either one goes missing.

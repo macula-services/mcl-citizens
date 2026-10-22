@@ -132,8 +132,8 @@
 <text class="t-rel" x="748" y="692">admit/2, one writer</text>
 <path class="edge" d="M488 758H512" marker-end="url(#a)"/>
 <text class="t-rel" x="500" y="690" text-anchor="middle">reads the directory</text>
-<text class="t-desc" x="40" y="1006">config/sys.config.src fixes the org, mcl-citizens, which prefixes every procedure; it also pins the realm key and the two</text>
-<text class="t-desc" x="40" y="1022">station node ids. deploy/docker-compose.yml mounts only the identity volume: nothing here writes to disk, so there is no data volume to lose.</text>
+<text class="t-desc" x="40" y="1006">config/sys.config.src fixes the org, mcl-citizens, which prefixes every procedure; it also pins the realm key.</text>
+<text class="t-desc" x="40" y="1022">deploy/docker-compose.yml mounts only the identity volume: nothing here writes to disk, so there is no data volume to lose.</text>
 <rect class="b-sys" x="24" y="1052" width="22" height="14" rx="3"/>
 <text class="t-leg" x="54" y="1064">In scope</text>
 <rect class="b-per" x="110.8" y="1052" width="22" height="14" rx="3"/>
