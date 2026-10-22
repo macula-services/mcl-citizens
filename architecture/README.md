@@ -4,8 +4,10 @@
 of, without reading it.*
 
 **Status: one soft-state directory, federated by fact.** One OTP release in one
-container. It serves three open procedures (`register_presence`, `list_citizens`,
-`get_citizen`), answers `/health` on a Unix socket, holds the directory in ETS,
+container. `register_presence`, `list_citizens` and `get_citizen` are the
+service's own procedures, and the only ones; `mcl-om` adds `<org>/info` and
+`<org>/get_limits` to every service, both open, and `capabilities/0` is the
+list. It answers `/health` on a Unix socket, holds the directory in ETS,
 and federates every registration to the other instances as a mesh fact. It opens
 no store and mounts no data volume.
 
@@ -17,9 +19,9 @@ no store and mounts no data volume.
 | --- | --- | --- |
 | mcl-citizens | In scope | Serves `mcl-citizens/register_presence`, `mcl-citizens/list_citizens` and `mcl-citizens/get_citizen`, and `/health` on `/run/mcl/health.sock`. One `mcl_om` mesh service in one container on its own box |
 | Citizen | Person | An agent, or the operator of a node, that registers itself (its verified caller id is its identity) and reads the directory |
-| Service operator | Person | Deploys the release and supplies `MCL_REALM`, `MCL_REALM_KEY`, the pinned station pair, `MCL_REALM_NAME` and the federation instance list |
+| Service operator | Person | Deploys the release and supplies `MCL_REALM`, `MCL_REALM_KEY`, `MACULA_STATION_SEEDS` with `MACULA_STATION_NODE_IDS`, `MCL_REALM_NAME` and the federation instance list |
 | macula-realm | Macula infrastructure | Endorses the node's identity key and grants the org `mcl-citizens`, which is what lets its procedures be advertised |
-| Macula stations, mesh DHT | Macula infrastructure | The service dials out to the pinned stations (QUIC, `pq_hybrid`); the mesh DHT takes the capabilities it advertises |
+| Macula stations, mesh DHT | Macula infrastructure | The service dials out to the stations from the environment (QUIC, `pq_hybrid`); the mesh DHT takes the capabilities it advertises |
 | Other mcl-citizens instances | External system | Peers on the directory topic: each hears the others' `citizen_presence_registered_v1`, but only from the node ids in `MCL_CITIZENS_PRESENCE_PUBLISHERS` |
 
 The directory is soft state. Nothing is written to disk: a restart empties the
@@ -34,7 +36,7 @@ because macula verifies the caller's signature before the handler runs; a
 
 | Component | Technology | Responsibility |
 | --- | --- | --- |
-| `mcl_citizens_service` | Erlang, the `mcl_om_service` behaviour | The six callbacks `mcl_om` resolves by name: `info/0`, `start/1`, `stop/1`, `health/0`, `capabilities/0`, `identity_spec/0`. `capabilities/0` lists the three open procedures; `identity_spec/0` asks for scope `mcl-citizens` with no actions and no resources |
+| `mcl_citizens_service` | Erlang, the `mcl_om_service` behaviour | The six callbacks `mcl_om` resolves by name: `info/0`, `start/1`, `stop/1`, `health/0`, `capabilities/0`, `identity_spec/0`. `capabilities/0` lists the service's own procedures; `identity_spec/0` asks for scope `mcl-citizens` with no actions and no resources |
 | `mcl_citizens_sup` | supervisor, `rest_for_one` | `citizen_directory`, then `hear_citizen_presence`. A directory restart empties the table, so the listener restarts behind it rather than admit into a table that is about to vanish |
 | `register_presence_responder` | `macula_response` RPC provider | Reads the verified caller, refuses a `citizen_did` that names another, bounds `ttl_ms` to 20 minutes, stamps `registered_at` from this instance's clock, writes through the one policy, then publishes the registration |
 | `hear_citizen_presence` | `gen_server`, the federation listener | Subscribes to `citizen_presence_registered_v1` and takes a fact only when macula verified its publisher and the node id is in `MCL_CITIZENS_PRESENCE_PUBLISHERS`. Re-subscribes every 5 s while the mesh is dark; counts what it drops and logs the count once a minute |
@@ -42,12 +44,12 @@ because macula verifies the caller's signature before the handler runs; a
 | `citizen_directory` | `gen_server` over one ETS table | Every write goes through `admit/2`, which compares against the live entry and decides, so two registrations cannot both win. `sweep/0` removes expired entries every 60 s |
 | `list_citizens` + `get_citizen` responders | `macula_response` RPC providers | `list_citizens` answers every live entry; `get_citizen` takes a 64-hex `citizen_did`. Both read ETS directly, and an expired entry is invisible at read time |
 | `mcl_citizens_facts` + `citizen_did` | topics and the citizen id | `presence_topic/1` is `<realm>/mcl-citizens/citizens/directory/citizen_presence_registered_v1`, and the realm name is checked against `MCL_REALM` at start. `citizen_did` parses and hex-encodes a DID so a raw 32-byte id never reaches a reply or a fact |
-| `mcl_om` | library, `~> 1.4` | `boot/1`: loads the node identity key, joins the realm, dials the pinned stations, registers the declared capabilities and serves `/health`. It opens no store (mcl-om#10) |
+| `mcl_om` | library, `~> 1.4` | `boot/1`: loads the node identity key, joins the realm, dials the stations from the environment, registers the declared capabilities and serves `/health`. It opens no store (mcl-om#10) |
 | macula SDK | library, `~> 16.0`, wire 1.0 | QUIC transport, signed calls (the caller's node id, verified before the handler runs), app fact topics and the node keys behind the publisher list |
 | host environment | from the host | `MCL_REALM`, `MCL_REALM_KEY`, `MACULA_STATION_SEEDS`, `MACULA_STATION_NODE_IDS`, `MCL_REALM_NAME`, `MCL_CITIZENS_PRESENCE_PUBLISHERS`, and the claim labels `MCL_SERVICE_NAME` and `MCL_BOX` |
 
-`config/sys.config.src` fixes the org, `mcl-citizens`, which prefixes every
-procedure, and pins the realm key. The identity key is
+`config/sys.config.src` fixes the org, `mcl-citizens`, which prefixes its own
+procedures, and pins the realm key. The identity key is
 the only thing on disk, at `/etc/mcl/secrets/identity.key`; `deploy/docker-compose.yml`
 mounts `mcl-citizens-secrets` there and nothing else. `/health` is `down` without
 the directory and `degraded` while the federation subscription is not held, which

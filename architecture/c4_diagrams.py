@@ -138,9 +138,9 @@ def context():
           ["Deploys the release and supplies", "the realm, the stations and the",
            "instance list"], person=True)
     d.box("b-sys", 365, 200, 270, 152, "mcl-citizens", "[mcl_om mesh service, own box]",
-          ["Three open procedures:", "register_presence, list_citizens",
-           "and get_citizen. /health is a Unix", "socket; the directory is in memory",
-           "and nothing is written to disk"])
+          ["register_presence, list_citizens and", "get_citizen are its own procedures;",
+           "mcl_om adds open info and get_limits;", "capabilities/0 is the list. /health is",
+           "a Unix socket; the directory is ETS"])
     d.box("b-ext", 365, 420, 270, 136, "Other mcl-citizens instances", "[External: federation peers]",
           ["Each registration is a fact on", "the directory topic. A peer is",
            "heard only when its node id is in", "the configured publisher list"])
@@ -148,8 +148,8 @@ def context():
           ["Endorses the node's identity key", "and grants the org mcl-citizens,",
            "whose procedures it advertises"])
     d.box("b-mac", 680, 420, 280, 120, "Macula stations, mesh DHT", "[Macula infrastructure]",
-          ["The pinned stations are its mesh", "entry points (QUIC); the DHT takes",
-           "the capabilities it advertises"])
+          ["Stations from the environment are", "its entry points (QUIC); the DHT",
+           "takes the capabilities it advertises"])
     d.edge("M180 150V180H400V200")
     d.text("t-rel", 200, 160, "calls register_presence,")
     d.text("t-rel", 200, 176, "list_citizens, get_citizen")
@@ -157,8 +157,8 @@ def context():
     d.text("t-rel", 640, 160, "deploys; supplies the realm,")
     d.text("t-rel", 640, 176, "stations and instance list")
     d.edge("M420 352V380H180V420"); d.text("t-rel", 300, 372, "boot claim, org grant")
-    d.edge("M600 352V380H820V420"); d.text("t-rel", 800, 356, "dials pinned; advertises", anchor="end")
-    d.text("t-rel", 800, 372, "each procedure", anchor="end")
+    d.edge("M600 352V380H820V420"); d.text("t-rel", 800, 356, "dials the stations; advertises", anchor="end")
+    d.text("t-rel", 800, 372, "what it serves", anchor="end")
     d.edge("M460 352V420"); d.text("t-rel", 452, 386, "publishes each registration", anchor="end")
     d.edge("M540 420V352"); d.text("t-rel", 548, 386, "only a listed publisher is heard")
     d.text("t-desc", 40, 574, "Nothing is written to disk: the directory is soft state, empty after a restart for at most one republish interval,")
@@ -173,14 +173,15 @@ def components():
     d.bound(16, 40, 968, 800, "mcl-citizens [Container]")
     d.box("b-mac", 32, 70, 456, 110, "mcl_om", "[library, ~> 1.4]",
           ["boot/1: loads the node identity key, joins the realm, dials the",
-           "pinned stations, registers the three capabilities, serves /health"], code=True)
+           "stations, registers the declared capabilities, serves /health"], code=True)
     d.box("b-mac", 512, 70, 456, 110, "macula SDK", "[library, ~> 16.0, wire 1.0]",
           ["QUIC transport, signed calls (the caller's node id, verified before",
            "the handler runs), fact topics and the node keys behind the list"], code=True)
-    d.box("b-sys", 32, 210, 456, 130, "mcl_citizens_service", "[mcl_om_service behaviour]",
-          ["The six callbacks mcl_om resolves by name at startup: info, start,",
-           "stop, health, capabilities, identity_spec. Three open capabilities.",
-           "No event store (mcl-om#10): the directory is ETS, with no volume"], code=True)
+    d.box("b-sys", 32, 210, 456, 140, "mcl_citizens_service", "[mcl_om_service behaviour]",
+          ["The six callbacks mcl_om resolves by name at startup:",
+           "register_presence, list_citizens and get_citizen are",
+           "its own procedures; mcl_om adds open info and",
+           "get_limits. capabilities/0 is the list. No store."], code=True)
     d.box("b-cmp", 512, 210, 456, 130, "mcl_citizens_sup", "[supervisor, rest_for_one]",
           ["citizen_directory, then hear_citizen_presence. A directory restart",
            "empties the table, and the listener restarts behind it so nothing is",
@@ -225,7 +226,7 @@ def components():
     d.edge("M488 440H500V604H512"); d.text("t-rel", 506, 524, "hands it over")
     d.edge("M740 674V698"); d.text("t-rel", 748, 692, "admit/2, one writer")
     d.edge("M488 758H512"); d.text("t-rel", 500, 690, "reads the directory", anchor="middle")
-    d.text("t-desc", 40, 1006, "config/sys.config.src fixes the org, mcl-citizens, which prefixes every procedure; it also pins the realm key.")
+    d.text("t-desc", 40, 1006, "config/sys.config.src fixes the org, mcl-citizens, which prefixes its own procedures; it also pins the realm key.")
     d.text("t-desc", 40, 1022, "deploy/docker-compose.yml mounts only the identity volume: nothing here writes to disk, so there is no data volume to lose.")
     d.legend(1052, boundary=False)
     d.write()

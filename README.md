@@ -28,8 +28,10 @@ Built on macula 16 and `mcl_om` 1.4.
 
 ## What it does
 
-A public phone book of who is on the mesh right now. It serves three
-procedures, all open, and answers `/health` on the Unix socket
+A public phone book of who is on the mesh right now. `register_presence`,
+`list_citizens` and `get_citizen` are the service's own procedures, and the only
+ones; `mcl_om` adds `<org>/info` and `<org>/get_limits` to every service, both
+open, and `capabilities/0` is the list. `/health` answers on the Unix socket
 `/run/mcl/health.sock`.
 
 | Procedure | Payload | Reply |
@@ -115,9 +117,9 @@ release, verifies it was signed on its tag and pins `<version>@sha256:<digest>`
 hold the image there. A push that changes
 only documentation builds no image (`scripts/is_image_push.sh`).
 
-The service's org, the `<org>` in every procedure it offers (`<org>/<name>`), is
+The service's org, the `<org>` that prefixes its own procedures (`<org>/<name>`), is
 this repository's name, fixed in `config/sys.config.src`. The realm's grant names
-it; without an org mcl_om advertises nothing.
+it; without an org mcl_om refuses to boot, naming the setting.
 
 Two things CI cannot do for you, both of which have bitten:
 
@@ -125,8 +127,9 @@ Two things CI cannot do for you, both of which have bitten:
    the host with a bare `unauthorized` that names nothing. Check it after the
    first build. On ghcr the `org.opencontainers.image.source` label in the
    Containerfile is what links the package to the repository.
-2. The host needs `MCL_REALM`, `MCL_REALM_NAME`, the instance list and the
-   pinned station pair supplied from somewhere they are not committed.
+2. The host needs `MCL_REALM`, `MCL_REALM_NAME`, the instance list and
+   `MACULA_STATION_SEEDS` plus `MACULA_STATION_NODE_IDS`, supplied from
+   somewhere they are not committed.
 
 ## The service contract
 

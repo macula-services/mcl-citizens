@@ -62,11 +62,11 @@
 <rect class="b-sys" x="365" y="200" width="270" height="152" rx="10"/>
 <text class="t-name" x="381" y="228">mcl-citizens</text>
 <text class="t-type" x="381" y="246">[mcl_om mesh service, own box]</text>
-<text class="t-desc" x="381" y="270">Three open procedures:</text>
-<text class="t-desc" x="381" y="286">register_presence, list_citizens</text>
-<text class="t-desc" x="381" y="302">and get_citizen. /health is a Unix</text>
-<text class="t-desc" x="381" y="318">socket; the directory is in memory</text>
-<text class="t-desc" x="381" y="334">and nothing is written to disk</text>
+<text class="t-desc" x="381" y="270">register_presence, list_citizens and</text>
+<text class="t-desc" x="381" y="286">get_citizen are its own procedures;</text>
+<text class="t-desc" x="381" y="302">mcl_om adds open info and get_limits;</text>
+<text class="t-desc" x="381" y="318">capabilities/0 is the list. /health is</text>
+<text class="t-desc" x="381" y="334">a Unix socket; the directory is ETS</text>
 <rect class="b-ext" x="365" y="420" width="270" height="136" rx="10"/>
 <text class="t-name" x="381" y="448">Other mcl-citizens instances</text>
 <text class="t-type" x="381" y="466">[External: federation peers]</text>
@@ -83,9 +83,9 @@
 <rect class="b-mac" x="680" y="420" width="280" height="120" rx="10"/>
 <text class="t-name" x="696" y="448">Macula stations, mesh DHT</text>
 <text class="t-type" x="696" y="466">[Macula infrastructure]</text>
-<text class="t-desc" x="696" y="490">The pinned stations are its mesh</text>
-<text class="t-desc" x="696" y="506">entry points (QUIC); the DHT takes</text>
-<text class="t-desc" x="696" y="522">the capabilities it advertises</text>
+<text class="t-desc" x="696" y="490">Stations from the environment are</text>
+<text class="t-desc" x="696" y="506">its entry points (QUIC); the DHT</text>
+<text class="t-desc" x="696" y="522">takes the capabilities it advertises</text>
 <path class="edge" d="M180 150V180H400V200" marker-end="url(#a)"/>
 <text class="t-rel" x="200" y="160">calls register_presence,</text>
 <text class="t-rel" x="200" y="176">list_citizens, get_citizen</text>
@@ -95,8 +95,8 @@
 <path class="edge" d="M420 352V380H180V420" marker-end="url(#a)"/>
 <text class="t-rel" x="300" y="372">boot claim, org grant</text>
 <path class="edge" d="M600 352V380H820V420" marker-end="url(#a)"/>
-<text class="t-rel" x="800" y="356" text-anchor="end">dials pinned; advertises</text>
-<text class="t-rel" x="800" y="372" text-anchor="end">each procedure</text>
+<text class="t-rel" x="800" y="356" text-anchor="end">dials the stations; advertises</text>
+<text class="t-rel" x="800" y="372" text-anchor="end">what it serves</text>
 <path class="edge" d="M460 352V420" marker-end="url(#a)"/>
 <text class="t-rel" x="452" y="386" text-anchor="end">publishes each registration</text>
 <path class="edge" d="M540 420V352" marker-end="url(#a)"/>

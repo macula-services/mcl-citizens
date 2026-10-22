@@ -51,18 +51,19 @@
 <text class="t-code" x="48" y="98">mcl_om</text>
 <text class="t-type" x="48" y="116">[library, ~&gt; 1.4]</text>
 <text class="t-desc" x="48" y="140">boot/1: loads the node identity key, joins the realm, dials the</text>
-<text class="t-desc" x="48" y="156">pinned stations, registers the three capabilities, serves /health</text>
+<text class="t-desc" x="48" y="156">stations, registers the declared capabilities, serves /health</text>
 <rect class="b-mac" x="512" y="70" width="456" height="110" rx="10"/>
 <text class="t-code" x="528" y="98">macula SDK</text>
 <text class="t-type" x="528" y="116">[library, ~&gt; 16.0, wire 1.0]</text>
 <text class="t-desc" x="528" y="140">QUIC transport, signed calls (the caller's node id, verified before</text>
 <text class="t-desc" x="528" y="156">the handler runs), fact topics and the node keys behind the list</text>
-<rect class="b-sys" x="32" y="210" width="456" height="130" rx="10"/>
+<rect class="b-sys" x="32" y="210" width="456" height="140" rx="10"/>
 <text class="t-code" x="48" y="238">mcl_citizens_service</text>
 <text class="t-type" x="48" y="256">[mcl_om_service behaviour]</text>
-<text class="t-desc" x="48" y="280">The six callbacks mcl_om resolves by name at startup: info, start,</text>
-<text class="t-desc" x="48" y="296">stop, health, capabilities, identity_spec. Three open capabilities.</text>
-<text class="t-desc" x="48" y="312">No event store (mcl-om#10): the directory is ETS, with no volume</text>
+<text class="t-desc" x="48" y="280">The six callbacks mcl_om resolves by name at startup:</text>
+<text class="t-desc" x="48" y="296">register_presence, list_citizens and get_citizen are</text>
+<text class="t-desc" x="48" y="312">its own procedures; mcl_om adds open info and</text>
+<text class="t-desc" x="48" y="328">get_limits. capabilities/0 is the list. No store.</text>
 <rect class="b-cmp" x="512" y="210" width="456" height="130" rx="10"/>
 <text class="t-code" x="528" y="238">mcl_citizens_sup</text>
 <text class="t-type" x="528" y="256">[supervisor, rest_for_one]</text>
@@ -132,7 +133,7 @@
 <text class="t-rel" x="748" y="692">admit/2, one writer</text>
 <path class="edge" d="M488 758H512" marker-end="url(#a)"/>
 <text class="t-rel" x="500" y="690" text-anchor="middle">reads the directory</text>
-<text class="t-desc" x="40" y="1006">config/sys.config.src fixes the org, mcl-citizens, which prefixes every procedure; it also pins the realm key.</text>
+<text class="t-desc" x="40" y="1006">config/sys.config.src fixes the org, mcl-citizens, which prefixes its own procedures; it also pins the realm key.</text>
 <text class="t-desc" x="40" y="1022">deploy/docker-compose.yml mounts only the identity volume: nothing here writes to disk, so there is no data volume to lose.</text>
 <rect class="b-sys" x="24" y="1052" width="22" height="14" rx="3"/>
 <text class="t-leg" x="54" y="1064">In scope</text>
