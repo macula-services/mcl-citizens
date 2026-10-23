@@ -191,12 +191,11 @@ def components():
            "citizen_did that names anyone else; bounds ttl_ms to 20 min, stamps",
            "registered_at from this instance's clock, writes through the one",
            "policy, then publishes the registration"], code=True)
-    d.box("b-cmp", 512, 370, 456, 152, "hear_citizen_presence", "[gen_server, federation listener]",
+    d.box("b-cmp", 512, 370, 456, 140, "hear_citizen_presence", "[gen_server, federation listener]",
           ["Subscribes to citizen_presence_registered_v1. A fact",
-           "is taken only when macula verified its publisher and",
+           "counts only when macula verified its publisher and",
            "the node id is in MCL_CITIZENS_PRESENCE_PUBLISHERS.",
-           "Re-subscribes every 5 s while the mesh is dark and",
-           "counts what it drops, logged once a minute"], code=True)
+           "Re-subscribes every 5 s while the mesh is dark"], code=True)
     d.box("b-cmp", 32, 534, 456, 140, "mcl_citizens_facts + citizen_did", "[topics and the citizen id]",
           ["presence_topic/1: <realm>/mcl-citizens/citizens/directory/",
            "citizen_presence_registered_v1. Checks sha256(MCL_REALM_NAME) ==",
