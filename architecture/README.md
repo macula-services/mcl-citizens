@@ -17,7 +17,7 @@ no store and mounts no data volume.
 
 | Element | Kind | Role |
 | --- | --- | --- |
-| mcl-citizens | In scope | Serves `mcl-citizens/register_presence`, `mcl-citizens/list_citizens` and `mcl-citizens/get_citizen`, and `/health` on `/run/mcl/health.sock`. One `mcl_om` mesh service in one container on its own box |
+| mcl-citizens | In scope | Serves `mcl-citizens/register_presence`, `mcl-citizens/list_citizens` and `mcl-citizens/get_citizen`, and `/health` on `/run/mcl/health.sock`. One `mcl_om` mesh service in one container |
 | Citizen | Person | An agent, or the operator of a node, that registers itself (its verified caller id is its identity) and reads the directory |
 | Service operator | Person | Deploys the release and supplies `MCL_REALM`, `MCL_REALM_KEY`, `MACULA_STATION_SEEDS` with `MACULA_STATION_NODE_IDS`, `MCL_REALM_NAME` and the federation instance list |
 | macula-realm | Macula infrastructure | Endorses the node's identity key and grants the org `mcl-citizens`, which is what lets its procedures be advertised |

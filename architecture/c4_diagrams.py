@@ -137,7 +137,7 @@ def context():
     d.box("b-per", 690, 30, 270, 120, "Service operator", "[Person]",
           ["Deploys the release and supplies", "the realm, the stations and the",
            "instance list"], person=True)
-    d.box("b-sys", 365, 200, 270, 152, "mcl-citizens", "[mcl_om mesh service, own box]",
+    d.box("b-sys", 365, 200, 270, 152, "mcl-citizens", "[mcl_om mesh service]",
           ["register_presence, list_citizens and", "get_citizen are its own procedures;",
            "mcl_om adds open info and get_limits;", "capabilities/0 is the list. /health is",
            "a Unix socket; the directory is ETS"])
@@ -159,8 +159,8 @@ def context():
     d.edge("M420 352V380H180V420"); d.text("t-rel", 300, 372, "boot claim, org grant")
     d.edge("M600 352V380H820V420"); d.text("t-rel", 800, 356, "dials the stations; advertises", anchor="end")
     d.text("t-rel", 800, 372, "what it serves", anchor="end")
-    d.edge("M460 352V420"); d.text("t-rel", 452, 386, "publishes each registration", anchor="end")
-    d.edge("M540 420V352"); d.text("t-rel", 548, 386, "only a listed publisher is heard")
+    d.edge("M460 352V420"); d.text("t-rel", 452, 400, "publishes each registration", anchor="end")
+    d.edge("M540 420V352"); d.text("t-rel", 548, 400, "only a listed publisher is heard")
     d.text("t-desc", 40, 574, "Nothing is written to disk: the directory is soft state, empty after a restart for at most one republish interval,")
     d.text("t-desc", 40, 592, "and refilled by the clients' own re-registrations and the peers' facts. A citizen registers itself and nobody else,")
     d.text("t-desc", 40, 610, "because macula verifies the caller's signature before the handler runs; a citizen_did naming anyone else is refused.")
@@ -191,11 +191,12 @@ def components():
            "citizen_did that names anyone else; bounds ttl_ms to 20 min, stamps",
            "registered_at from this instance's clock, writes through the one",
            "policy, then publishes the registration"], code=True)
-    d.box("b-cmp", 512, 370, 456, 140, "hear_citizen_presence", "[gen_server, federation listener]",
-          ["Subscribes to citizen_presence_registered_v1. A fact is taken only",
-           "when macula verified its publisher and the node id is in",
-           "MCL_CITIZENS_PRESENCE_PUBLISHERS. Re-subscribes every 5 s while the",
-           "mesh is dark and counts what it drops, logged once a minute"], code=True)
+    d.box("b-cmp", 512, 370, 456, 152, "hear_citizen_presence", "[gen_server, federation listener]",
+          ["Subscribes to citizen_presence_registered_v1. A fact",
+           "is taken only when macula verified its publisher and",
+           "the node id is in MCL_CITIZENS_PRESENCE_PUBLISHERS.",
+           "Re-subscribes every 5 s while the mesh is dark and",
+           "counts what it drops, logged once a minute"], code=True)
     d.box("b-cmp", 32, 534, 456, 140, "mcl_citizens_facts + citizen_did", "[topics and the citizen id]",
           ["presence_topic/1: <realm>/mcl-citizens/citizens/directory/",
            "citizen_presence_registered_v1. Checks sha256(MCL_REALM_NAME) ==",

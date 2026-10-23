@@ -77,13 +77,14 @@
 <text class="t-desc" x="48" y="456">citizen_did that names anyone else; bounds ttl_ms to 20 min, stamps</text>
 <text class="t-desc" x="48" y="472">registered_at from this instance's clock, writes through the one</text>
 <text class="t-desc" x="48" y="488">policy, then publishes the registration</text>
-<rect class="b-cmp" x="512" y="370" width="456" height="140" rx="10"/>
+<rect class="b-cmp" x="512" y="370" width="456" height="152" rx="10"/>
 <text class="t-code" x="528" y="398">hear_citizen_presence</text>
 <text class="t-type" x="528" y="416">[gen_server, federation listener]</text>
-<text class="t-desc" x="528" y="440">Subscribes to citizen_presence_registered_v1. A fact is taken only</text>
-<text class="t-desc" x="528" y="456">when macula verified its publisher and the node id is in</text>
-<text class="t-desc" x="528" y="472">MCL_CITIZENS_PRESENCE_PUBLISHERS. Re-subscribes every 5 s while the</text>
-<text class="t-desc" x="528" y="488">mesh is dark and counts what it drops, logged once a minute</text>
+<text class="t-desc" x="528" y="440">Subscribes to citizen_presence_registered_v1. A fact</text>
+<text class="t-desc" x="528" y="456">is taken only when macula verified its publisher and</text>
+<text class="t-desc" x="528" y="472">the node id is in MCL_CITIZENS_PRESENCE_PUBLISHERS.</text>
+<text class="t-desc" x="528" y="488">Re-subscribes every 5 s while the mesh is dark and</text>
+<text class="t-desc" x="528" y="504">counts what it drops, logged once a minute</text>
 <rect class="b-cmp" x="32" y="534" width="456" height="140" rx="10"/>
 <text class="t-code" x="48" y="562">mcl_citizens_facts + citizen_did</text>
 <text class="t-type" x="48" y="580">[topics and the citizen id]</text>

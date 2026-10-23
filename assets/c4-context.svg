@@ -61,7 +61,7 @@
 <text class="t-desc" x="706" y="132">instance list</text>
 <rect class="b-sys" x="365" y="200" width="270" height="152" rx="10"/>
 <text class="t-name" x="381" y="228">mcl-citizens</text>
-<text class="t-type" x="381" y="246">[mcl_om mesh service, own box]</text>
+<text class="t-type" x="381" y="246">[mcl_om mesh service]</text>
 <text class="t-desc" x="381" y="270">register_presence, list_citizens and</text>
 <text class="t-desc" x="381" y="286">get_citizen are its own procedures;</text>
 <text class="t-desc" x="381" y="302">mcl_om adds open info and get_limits;</text>
@@ -98,9 +98,9 @@
 <text class="t-rel" x="800" y="356" text-anchor="end">dials the stations; advertises</text>
 <text class="t-rel" x="800" y="372" text-anchor="end">what it serves</text>
 <path class="edge" d="M460 352V420" marker-end="url(#a)"/>
-<text class="t-rel" x="452" y="386" text-anchor="end">publishes each registration</text>
+<text class="t-rel" x="452" y="400" text-anchor="end">publishes each registration</text>
 <path class="edge" d="M540 420V352" marker-end="url(#a)"/>
-<text class="t-rel" x="548" y="386">only a listed publisher is heard</text>
+<text class="t-rel" x="548" y="400">only a listed publisher is heard</text>
 <text class="t-desc" x="40" y="574">Nothing is written to disk: the directory is soft state, empty after a restart for at most one republish interval,</text>
 <text class="t-desc" x="40" y="592">and refilled by the clients' own re-registrations and the peers' facts. A citizen registers itself and nobody else,</text>
 <text class="t-desc" x="40" y="610">because macula verifies the caller's signature before the handler runs; a citizen_did naming anyone else is refused.</text>
