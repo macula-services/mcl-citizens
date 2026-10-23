@@ -62,8 +62,8 @@
 <text class="t-type" x="48" y="256">[mcl_om_service behaviour]</text>
 <text class="t-desc" x="48" y="280">The six callbacks mcl_om resolves by name at startup:</text>
 <text class="t-desc" x="48" y="296">register_presence, list_citizens and get_citizen are</text>
-<text class="t-desc" x="48" y="312">its own procedures; mcl_om adds open info and</text>
-<text class="t-desc" x="48" y="328">get_limits. capabilities/0 is the list. No store.</text>
+<text class="t-desc" x="48" y="312">its own procedures; mcl_om adds info and get_limits,</text>
+<text class="t-desc" x="48" y="328">both open. capabilities/0 is the list. No store.</text>
 <rect class="b-cmp" x="512" y="210" width="456" height="130" rx="10"/>
 <text class="t-code" x="528" y="238">mcl_citizens_sup</text>
 <text class="t-type" x="528" y="256">[supervisor, rest_for_one]</text>

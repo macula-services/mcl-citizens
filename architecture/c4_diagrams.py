@@ -180,8 +180,8 @@ def components():
     d.box("b-sys", 32, 210, 456, 140, "mcl_citizens_service", "[mcl_om_service behaviour]",
           ["The six callbacks mcl_om resolves by name at startup:",
            "register_presence, list_citizens and get_citizen are",
-           "its own procedures; mcl_om adds open info and",
-           "get_limits. capabilities/0 is the list. No store."], code=True)
+           "its own procedures; mcl_om adds info and get_limits,",
+           "both open. capabilities/0 is the list. No store."], code=True)
     d.box("b-cmp", 512, 210, 456, 130, "mcl_citizens_sup", "[supervisor, rest_for_one]",
           ["citizen_directory, then hear_citizen_presence. A directory restart",
            "empties the table, and the listener restarts behind it so nothing is",

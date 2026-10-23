@@ -52,7 +52,7 @@ A `citizen_did` sent anyway must be the caller's, or the call is refused with
 `citizen_did_is_not_the_caller`.
 
 **Entries expire.** An entry lives for its `ttl_ms` from `registered_at`, at
-most twenty minutes; clients re-register about every five. The latest
+most twenty minutes; clients re-register about every five minutes. The latest
 registration wins, by `registered_at`.
 
 **The directory is soft state, empty after a restart for up to one republish
@@ -110,7 +110,7 @@ what stops a config table in a README and the real environment drifting.
 
 A `v*` tag publishes `ghcr.io/macula-services/mcl-citizens:<version>` and nothing else, signed
 by digest with its SBOM and provenance (macula-ci-images' `attest-image.yml`). A push to
-`main` publishes `:main` and `:<sha>`, which nothing follows, and nothing moves `:latest`.
+`main` publishes `:main` and `:<sha>`; no deployment takes them, and `:latest` does not move.
 The fleet runs a release by digest: macula-fleet's pin-releases workflow finds the signed
 release, verifies it was signed on its tag and pins `<version>@sha256:<digest>`
 (macula-fleet#14, #15), so a green `v*` tag is the deploy. To roll back, revert the pin and
