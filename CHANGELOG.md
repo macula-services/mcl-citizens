@@ -5,9 +5,29 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.5.0] - 2026-10-30
 
-- **The base library is macula 16** (macula-codebase-checks#4): the floor moves `~> 15.6` to `~> 16.0`, and `mcl_om` from `~> 1.0` to `~> 1.4`, the release whose own base is macula 16. 16.0 keeps wire 1.0, so this service still speaks to every wire 1.0 box. What it adds is the revocation bound (macula#118): an endorsement admits its holder for at most 24 hours, and a gated overlay context must pass `member_standing`. This service gates no overlay and issues no endorsement.
+### Changed
+
+- **macula 18 and mcl_om 1.6** (macula-services/mcl-om#42). The floors move to
+  `mcl_om ~> 1.6` and `macula ~> 18.0`. macula arrives through mcl_om, but a
+  top-level pin wins in rebar3, so both move together. This release carries the
+  macula 16 step in the same jump: 18 keeps wire 1.0 and everything 16 added —
+  the revocation bound (macula#118), an endorsement admitting its holder for at
+  most 24 hours, a gated overlay context passing `member_standing` — and no
+  0.4.1 was tagged on 16 in between.
+- **The presence subscription now names its sources** (macula 18,
+  macula-io/macula#147). `macula:subscribe/4` does not exist at 18: a
+  subscription declares `members`, `{org, Organisation}`, `{nodes, [NodeId]}`
+  or `open`, and one that names none is refused `{error, {sources, required}}`
+  rather than delivered to by anyone. `hear_citizen_presence` passes
+  `{nodes, Publishers}` — the instance list this module already filtered by
+  hand — so the SDK now refuses a rogue publisher before its fact reaches the
+  process. `listed/2` stays as the second line, which means `dropped` should
+  stay at zero; a move off it now means the SDK's check regressed or a fact
+  arrived by another path, and either is worth the warning it raises.
+- Minor rather than patch: this release runs only on a box carrying mcl_om 1.6,
+  and it changes the shape of a call this service makes.
 
 ## 0.4.0 - 2026-10-17
 

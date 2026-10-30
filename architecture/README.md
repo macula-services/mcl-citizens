@@ -44,8 +44,8 @@ because macula verifies the caller's signature before the handler runs; a
 | `citizen_directory` | `gen_server` over one ETS table | Every write goes through `admit/2`, which compares against the live entry and decides, so two registrations cannot both win. `sweep/0` removes expired entries every 60 s |
 | `list_citizens` + `get_citizen` responders | `macula_response` RPC providers | `list_citizens` answers every live entry; `get_citizen` takes a 64-hex `citizen_did`. Both read ETS directly, and an expired entry is invisible at read time |
 | `mcl_citizens_facts` + `citizen_did` | topics and the citizen id | `presence_topic/1` is `<realm>/mcl-citizens/citizens/directory/citizen_presence_registered_v1`, and the realm name is checked against `MCL_REALM` at start. `citizen_did` parses and hex-encodes a DID so a raw 32-byte id never reaches a reply or a fact |
-| `mcl_om` | library, `~> 1.4` | `boot/1`: loads the node identity key, joins the realm, dials the stations from the environment, registers the declared capabilities and serves `/health`. It opens no store (mcl-om#10) |
-| macula SDK | library, `~> 16.0`, wire 1.0 | QUIC transport, signed calls (the caller's node id, verified before the handler runs), app fact topics and the node keys behind the publisher list |
+| `mcl_om` | library, `~> 1.6` | `boot/1`: loads the node identity key, joins the realm, dials the stations from the environment, registers the declared capabilities and serves `/health`. It opens no store (mcl-om#10) |
+| macula SDK | library, `~> 18.0`, wire 1.0 | QUIC transport, signed calls (the caller's node id, verified before the handler runs), app fact topics and the node keys behind the publisher list |
 | host environment | from the host | `MCL_REALM`, `MCL_REALM_KEY`, `MACULA_STATION_SEEDS`, `MACULA_STATION_NODE_IDS`, `MCL_REALM_NAME`, `MCL_CITIZENS_PRESENCE_PUBLISHERS`, and the claim labels `MCL_SERVICE_NAME` and `MCL_BOX` |
 
 `config/sys.config.src` fixes the org, `mcl-citizens`, which prefixes its own

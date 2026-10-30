@@ -171,10 +171,10 @@ def context():
 def components():
     d = Diagram("c4-components.svg", "mcl-citizens components", 1000, 1090)
     d.bound(16, 40, 968, 800, "mcl-citizens [Container]")
-    d.box("b-mac", 32, 70, 456, 110, "mcl_om", "[library, ~> 1.4]",
+    d.box("b-mac", 32, 70, 456, 110, "mcl_om", "[library, ~> 1.6]",
           ["boot/1: loads the node identity key, joins the realm, dials the",
            "stations, registers the declared capabilities, serves /health"], code=True)
-    d.box("b-mac", 512, 70, 456, 110, "macula SDK", "[library, ~> 16.0, wire 1.0]",
+    d.box("b-mac", 512, 70, 456, 110, "macula SDK", "[library, ~> 18.0, wire 1.0]",
           ["QUIC transport, signed calls (the caller's node id, verified before",
            "the handler runs), fact topics and the node keys behind the list"], code=True)
     d.box("b-sys", 32, 210, 456, 140, "mcl_citizens_service", "[mcl_om_service behaviour]",

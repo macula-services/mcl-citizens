@@ -90,8 +90,18 @@ own_node_id({error, _} = Error) -> Error.
 
 %%------------------------------------------------------------------------------
 
-subscribe({ok, Pool, Realm}, #st{topic = Topic, ref = undefined} = St) ->
-    held(macula:subscribe(Pool, Realm, Topic, self()), St);
+subscribe({ok, Pool, Realm}, #st{topic = Topic, publishers = Publishers,
+                                 ref = undefined} = St) ->
+    %% SOURCES, NOT just our own filter (macula 18, macula#147): the SDK refuses
+    %% a subscription that names none, and `{nodes, Ids}' is the same list this
+    %% module has always checked by hand. It costs no lookup — the publisher is
+    %% verified at the link and compared — and it refuses a rogue publisher
+    %% before its fact reaches this process at all. `listed/2' stays as the
+    %% second line, so `dropped' moving off zero now means the SDK's check
+    %% regressed or a fact arrived by another path, either of which is worth
+    %% the warning.
+    held(macula:subscribe(Pool, Realm, Topic, self(),
+                          #{sources => {nodes, Publishers}}), St);
 subscribe({ok, _Pool, _Realm}, St) ->
     St;
 subscribe({error, mesh_unavailable}, St) ->
