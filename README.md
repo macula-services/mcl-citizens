@@ -36,14 +36,28 @@ open, and `capabilities/0` is the list. `/health` answers on the Unix socket
 
 | Procedure | Payload | Reply |
 |-----------|---------|-------|
-| `mcl-citizens/register_presence` | optional `citizen_kind`, `display_name`, `offers` (list), `ttl_ms` (default and maximum 20 minutes), and optionally `citizen_did` | `#{ok => 1, expires_at => Ms}` or `#{ok => 0, error => Text}` |
-| `mcl-citizens/list_citizens` | none | `#{ok => 1, citizens => [Citizen]}` |
+| `mcl-citizens/register_presence` | optional `citizen_kind` (at most 32 bytes), `display_name` (at most 64 bytes), `offers` (at most 16, each at most 64 bytes), `ttl_ms` (default and maximum 20 minutes), and optionally `citizen_did` | `#{ok => 1, expires_at => Ms}` or `#{ok => 0, error => Text}` |
+| `mcl-citizens/list_citizens` | optional `limit` (1 to 200, default 100) and `after` (a `citizen_did`, 64 hex text) | `#{ok => 1, citizens => [Citizen], next => Did}`, `next` absent on the last page, or `#{ok => 0, error => "invalid_page"}` |
 | `mcl-citizens/get_citizen` | `citizen_did`, 64 hex text | `#{ok => 1, citizen => Citizen}` or `#{ok => 0, error => Text}`: `not_found`, `invalid_citizen_did` or `invalid_payload` |
 
 A `Citizen` is `citizen_did` (lowercase hex text), `citizen_kind`,
 `display_name`, `offers`, `registered_at` and `expires_at` (milliseconds),
 absent fields omitted. Every string goes out as `{text, Bin}`, so callers
 outside the BEAM get strings and not hex.
+
+**One entry costs a bounded amount, and every entry is text.** Each of
+`display_name`, `citizen_kind` and every offer must be non-empty UTF-8 with no
+control character, within the limits in the table; a registration that is not
+is refused and nothing is written. The reasons are `display_name_too_long`,
+`invalid_display_name`, `citizen_kind_too_long`, `invalid_citizen_kind`,
+`too_many_offers`, `offer_too_long` and `invalid_offer`. The same check runs on
+a presence fact heard from another instance. Without it, one name that is not
+valid UTF-8 made every `list_citizens` reply unsendable.
+
+**`list_citizens` answers a page.** Entries come ordered by `citizen_did`. To
+read the whole directory, call again with `after` set to the `next` you got,
+until a reply carries no `next`. One reply holds at most 200 entries, whatever
+the directory holds.
 
 **A citizen registers itself and nobody else.** macula signs every CALL with
 the caller's identity key and verifies it here before the handler runs, so the

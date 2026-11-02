@@ -5,6 +5,27 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **`list_citizens` answers a page** (mcl-citizens#1, threat model on
+  macula-services/mcl-om#19). Entries are ordered by `citizen_did`; `limit`
+  (1 to 200, default 100) bounds the page and `after` (a DID as 64 hex text)
+  starts it; `next` names the last DID when more remain. A limit or `after`
+  out of bounds is refused `invalid_page`. A caller that read the whole list in
+  one reply now gets the first 100 and must follow `next`.
+
+### Security
+
+- **A presence entry is bounded and must be text** (mcl-citizens#1).
+  `display_name` at most 64 bytes, `citizen_kind` at most 32, `offers` at most
+  16 of at most 64 bytes, each non-empty UTF-8 with no C0, DEL or C1 control
+  character. One policy checks it on both paths in, a caller's own
+  `register_presence` and a federated presence fact, before anything is
+  written. Before this, one registration whose `display_name` was not valid
+  UTF-8 made every `list_citizens` reply unsendable for as long as it lived.
+
 ## [0.5.0] - 2026-10-30
 
 ### Changed
